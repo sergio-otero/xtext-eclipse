@@ -187,7 +187,7 @@ public class XbaseQuickfixProvider extends DefaultQuickfixProvider {
 			@Override
 			public void apply(IModificationContext context) throws Exception {
 				final IXtextDocument document = context.getXtextDocument();
-				ReplaceRegion replacement = document.readOnly(new IUnitOfWork<ReplaceRegion, XtextResource>() {
+				ReplaceRegion replacement = document.tryReadOnly(new IUnitOfWork<ReplaceRegion, XtextResource>() {
 
 					@Override
 					public ReplaceRegion exec(XtextResource state) throws Exception {
@@ -198,7 +198,9 @@ public class XbaseQuickfixProvider extends DefaultQuickfixProvider {
 						return new ReplaceRegion(castNode.getTotalTextRegion(), targetNode.getText());
 					}
 				});
-				document.replace(replacement.getOffset(), replacement.getLength(), replacement.getText());
+				if (replacement != null) {
+					document.replace(replacement.getOffset(), replacement.getLength(), replacement.getText());
+				}
 			}
 		});
 	}
@@ -673,7 +675,7 @@ public class XbaseQuickfixProvider extends DefaultQuickfixProvider {
 				issue);
 		final IXtextDocument xtextDocument = modificationContext.getXtextDocument();
 		if (xtextDocument != null) {
-			xtextDocument.readOnly(new CancelableUnitOfWork<Void, XtextResource>() {
+			xtextDocument.tryReadOnly(new CancelableUnitOfWork<Void, XtextResource>() {
 				@Override
 				public java.lang.Void exec(XtextResource state, CancelIndicator cancelIndicator) throws Exception {
 					try {
