@@ -55,4 +55,7 @@
 		<module>org.eclipse.xtext.xtext.ui.tests</module>
 	</modules>
 
+	<build>
+		<defaultGoal>verify</defaultGoal>
+	</build>
 </project>
