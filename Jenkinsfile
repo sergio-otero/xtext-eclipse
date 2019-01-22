@@ -10,7 +10,7 @@ pipeline {
   }
   
   parameters {
-    choice(name: 'TARGET_PLATFORM', choices: ['oxygen', 'photon', 'r201809', 'r201812'], description: 'Which Target Platform should be used?')
+    choice(name: 'TARGET_PLATFORM', choices: 'oxygen\nphoton\nr201809\nr201812\nlatest', description: 'Which Target Platform should be used?')
   }
   
   
