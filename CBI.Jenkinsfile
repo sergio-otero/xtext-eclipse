@@ -50,13 +50,6 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        script {
-          properties([
-            [$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/eclipse/xtext-core/'],
-            [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
-          ])
-        }
-
         sh '''
           if [ -d ".git" ]; then
             git reset --hard
@@ -101,43 +94,19 @@ pipeline {
           targetfiles="$(find releng -type f -iname '*.target')"
           for targetfile in $targetfiles
           do
-            echo "Redirecting target platforms in $targetfile to $BRANCH_NAME"
+            echo "Redirecting target platforms in $targetfile to $JENKINS_URL"
             sed_inplace "s?<repository location=\\".*/job/\\([^/]*\\)/job/[^/]*/?<repository location=\\"$JENKINS_URL/job/\\1/job/$escapedBranch/?" $targetfile
           done
         '''
       }
     }
 
-    stage('Maven Build') {
+    stage('Build') {
       steps {
         container('container') {
           configFileProvider(
             [configFile(fileId: '7a78c736-d3f8-45e0-8e69-bf07c27b97ff', variable: 'MAVEN_SETTINGS')]) {
-            sh '''
-              if [ "latest" == "$target_platform" ] 
-              then
-                export targetProfile="-Platest"
-              elif [ "r201809" == "$target_platform" ] 
-              then
-                export targetProfile="-Pr201809"
-              elif [ "photon" == "$target_platform" ] 
-              then
-                export targetProfile="-Pphoton"
-              else
-                export targetProfile="-Poxygen"
-              fi
-              mvn \
-                -s $MAVEN_SETTINGS \
-                --batch-mode \
-                -fae \
-                -Dmaven.test.failure.ignore=true \
-                -Dmaven.repo.local=.m2/repository \
-                -DJENKINS_URL=$JENKINS_URL \
-                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                $targetProfile \
-                clean install
-            '''
-          }
+            sh "./1-maven-build.sh --tp=${params.TARGET_PLATFORM} -s $MAVEN_SETTINGS"
         }
       }
     }
@@ -220,6 +189,30 @@ pipeline {
     }
     failure {
       archiveArtifacts artifacts: '**/target/work/data/.metadata/.log, **/hs_err_pid*.log'
+    }
+    changed {
+      script {
+        def envName = ''
+        if (env.JENKINS_URL.contains('ci.eclipse.org/xtext')) {
+          envName = ' (JIPP)'
+        } else if (env.JENKINS_URL.contains('jenkins.eclipse.org/xtext')) {
+          envName = ' (CBI)'
+        } else if (env.JENKINS_URL.contains('typefox.io')) {
+          envName = ' (TF)'
+        }
+        
+        def curResult = currentBuild.currentResult
+        def color = '#00FF00'
+        if (curResult == 'SUCCESS' && currentBuild.previousBuild != null) {
+          curResult = 'FIXED'
+        } else if (curResult == 'UNSTABLE') {
+          color = '#FFFF00'
+        } else if (curResult == 'FAILURE') {
+          color = '#FF0000'
+        }
+        
+        slackSend message: "${curResult}: <${env.BUILD_URL}|${env.JOB_NAME}#${env.BUILD_NUMBER}${envName}>", baseUrl: 'https://itemis.slack.com/services/hooks/jenkins-ci/', botUser: true, channel: 'xtext-builds', color: '#00FFFF', token: '1vbkhv8Hwlp3ausuFGj1BdJb'
+      }
     }
   }
 }
