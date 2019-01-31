@@ -8,18 +8,13 @@ pipeline {
         kind: Pod
         spec:
           containers:
-          - name: container
-            image: eclipsecbi/debian-gtk3-metacity
-            tty: true
-            command:
-              - cat
           - name: jnlp
             image: 'eclipsecbi/jenkins-jnlp-agent'
             args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
             volumeMounts:
             - mountPath: /home/jenkins/.ssh
               name: volume-known-hosts
-          - name: wildwebdeveloper
+          - name: plugin-build
             image: mickaelistria/wildwebdeveloper-build-test-dependencies@sha256:c9336c2b3ab06cc803e7465c2c1a3cea58bd09cbe5cbaf44f3630a77a9290e2f
             tty: true
             command: [ "uid_entrypoint", "cat" ]
@@ -32,20 +27,13 @@ pipeline {
   }
   
   parameters {
-    choice(name: 'TARGET_PLATFORM', choices: ['oxygen', 'photon', 'r201809', 'r201812', 'latest'], description: 'Which Target Platform should be used?')
+    choice(name: 'TARGET_PLATFORM', choices: ['latest', 'oxygen', 'photon', 'r201809', 'r201812'], description: 'Which Target Platform should be used?')
   }
 
   options {
     buildDiscarder(logRotator(numToKeepStr:'15'))
   }
 
-  /*
-  tools { 
-    maven 'apache-maven-latest'
-    jdk 'oracle-jdk8-latest'
-  }
-  */
-  
   // https://jenkins.io/doc/book/pipeline/syntax/#triggers
   triggers {
     pollSCM('H/5 * * * *')
@@ -107,7 +95,7 @@ pipeline {
 
     stage('Build') {
       steps {
-        container('wildwebdeveloper') {
+        container('plugin-build') {
           configFileProvider(
             [configFile(fileId: '7a78c736-d3f8-45e0-8e69-bf07c27b97ff', variable: 'MAVEN_SETTINGS')]) {
               wrap([$class: 'Xvnc', useXauthority: true]) {
@@ -171,7 +159,7 @@ pipeline {
           color = '#FF0000'
         }
         
-        slackSend message: "${curResult}: <${env.BUILD_URL}|${env.JOB_NAME}#${env.BUILD_NUMBER}${envName}>", botUser: true, channel: 'xtext-builds', color: ${color}
+        slackSend message: "${curResult}: <${env.BUILD_URL}|${env.JOB_NAME}#${env.BUILD_NUMBER}${envName}>", botUser: true, channel: 'xtext-builds', color: "${color}"
       }
     }
   }
