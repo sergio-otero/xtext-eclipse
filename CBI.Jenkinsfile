@@ -19,6 +19,10 @@ pipeline {
             volumeMounts:
             - mountPath: /home/jenkins/.ssh
               name: volume-known-hosts
+          - name: wildwebdeveloper
+            image: mickaelistria/wildwebdeveloper-build-test-dependencies@sha256:c9336c2b3ab06cc803e7465c2c1a3cea58bd09cbe5cbaf44f3630a77a9290e2f
+            tty: true
+            command: [ "uid_entrypoint", "cat" ]
           volumes:
           - configMap:
               name: known-hosts
@@ -103,7 +107,7 @@ pipeline {
 
     stage('Build') {
       steps {
-        container('container') {
+        container('wildwebdeveloper') {
           configFileProvider(
             [configFile(fileId: '7a78c736-d3f8-45e0-8e69-bf07c27b97ff', variable: 'MAVEN_SETTINGS')]) {
             sh "./1-maven-build.sh --tp=${params.TARGET_PLATFORM} -s $MAVEN_SETTINGS"
@@ -164,7 +168,7 @@ pipeline {
           color = '#FF0000'
         }
         
-        slackSend message: "${curResult}: <${env.BUILD_URL}|${env.JOB_NAME}#${env.BUILD_NUMBER}${envName}>", baseUrl: 'https://itemis.slack.com/services/hooks/jenkins-ci/', botUser: true, channel: 'xtext-builds', color: '#00FFFF', token: '1vbkhv8Hwlp3ausuFGj1BdJb'
+        // slackSend message: "${curResult}: <${env.BUILD_URL}|${env.JOB_NAME}#${env.BUILD_NUMBER}${envName}>", baseUrl: 'https://itemis.slack.com/services/hooks/jenkins-ci/', botUser: true, channel: 'xtext-builds', color: '#00FFFF', token: '1vbkhv8Hwlp3ausuFGj1BdJb'
       }
     }
   }
