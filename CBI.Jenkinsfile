@@ -101,6 +101,7 @@ pipeline {
               wrap([$class: 'Xvnc', useXauthority: true]) {
                 sh "./1-maven-build.sh -s $MAVEN_SETTINGS --tp=${params.TARGET_PLATFORM} "
               }
+              step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
             }
         }
       }
