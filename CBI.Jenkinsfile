@@ -112,53 +112,6 @@ pipeline {
     }
     
     /*
-    stage('Integration Test') {
-      steps {
-        container('container') {
-          configFileProvider(
-            [configFile(fileId: '7a78c736-d3f8-45e0-8e69-bf07c27b97ff', variable: 'MAVEN_SETTINGS')]) {
-            sh '''
-              if [ "latest" == "$target_platform" ] 
-              then
-                export targetProfile="-Platest"
-              elif [ "r201809" == "$target_platform" ] 
-              then
-                export targetProfile="-Pr201809"
-              elif [ "photon" == "$target_platform" ] 
-              then
-                export targetProfile="-Pphoton"
-              else
-                export targetProfile="-Poxygen"
-              fi
-              mvn \
-                -s $MAVEN_SETTINGS \
-                --batch-mode \
-                -fae \
-                -Dmaven.test.failure.ignore=true \
-                -Dmaven.repo.local=.m2/repository \
-                -DJENKINS_URL=$JENKINS_URL \
-                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                -pl \
-                  org.eclipse.xtext.builder.tests,org.eclipse.xtext.eclipse.tests,org.eclipse.xtext.junit4.tests \
-                $targetProfile \
-                verify
-            '''
-          }
-          // :org.eclipse.xtext.common.types.eclipse.tests,\ ,org.eclipse.xtext.eclipse.tests
-//,\
-//                  :org.eclipse.xtext.junit4.tests,\
-//                  :org.eclipse.xtext.purexbase.eclipse.tests,\
-//                  :org.eclipse.xtext.ui.codetemplates.tests,\
-//                  :org.eclipse.xtext.ui.tests,\
-//                  :org.eclipse.xtext.xbase.ui.tests,\
-//                  :org.eclipse.xtext.xtext.ui.graph.tests,\
-//                  :org.eclipse.xtext.xtext.ui.tests \          
-        }
-      }
-    }
-    */
-
-    /*
     stage('Domainmodel Example') {
       steps {
         configFileProvider(
