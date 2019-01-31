@@ -36,7 +36,7 @@ while [ "$1" != "" ]; do
 done
 
 echo "Using target platform '$TARGET_PLATFORM'"
-mvn \
+./mvnw \
   --batch-mode \
   --update-snapshots \
   -fae \
