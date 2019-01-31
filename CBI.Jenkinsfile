@@ -110,7 +110,9 @@ pipeline {
         container('wildwebdeveloper') {
           configFileProvider(
             [configFile(fileId: '7a78c736-d3f8-45e0-8e69-bf07c27b97ff', variable: 'MAVEN_SETTINGS')]) {
-              sh "./1-maven-build.sh -s $MAVEN_SETTINGS --tp=${params.TARGET_PLATFORM} "
+              wrap([$class: 'Xvnc', useXauthority: true]) {
+                sh "./1-maven-build.sh -s $MAVEN_SETTINGS --tp=${params.TARGET_PLATFORM} "
+              }
             }
         }
       }
