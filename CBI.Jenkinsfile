@@ -59,13 +59,13 @@ pipeline {
         checkout scm
         
         script {
-          if ("latest" == params.TARGET_PLATFORM) {
+          if (params.TARGET_PLATFORM == 'latest') {
             currentBuild.displayName = "#${BUILD_NUMBER}(4.11)"
-          } else if ("r201812" == params.TARGET_PLATFORM) {
+          } else if (params.TARGET_PLATFORM == 'r201812') {
             currentBuild.displayName = "#${BUILD_NUMBER}(4.10)"
-          } else if ("r201809" == params.TARGET_PLATFORM) {
+          } else if (params.TARGET_PLATFORM == 'r201809') {
             currentBuild.displayName = "#${BUILD_NUMBER}(4.9)"
-          } else if ("photon" == params.TARGET_PLATFORM) {
+          } else if (params.TARGET_PLATFORM == 'photon') {
             currentBuild.displayName = "#${BUILD_NUMBER}(4.8)"
           } else {
             currentBuild.displayName = "#${BUILD_NUMBER}(4.7)"
