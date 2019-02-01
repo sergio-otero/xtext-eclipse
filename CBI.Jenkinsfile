@@ -34,11 +34,6 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr:'15'))
   }
 
-  // https://jenkins.io/doc/book/pipeline/syntax/#triggers
-  triggers {
-    pollSCM('H/5 * * * *')
-  }
-  
   stages {
     stage('Checkout') {
       steps {
@@ -47,7 +42,6 @@ pipeline {
             git reset --hard
           fi
         '''
-        
         checkout scm
         
         script {
@@ -99,7 +93,7 @@ pipeline {
           configFileProvider(
             [configFile(fileId: '7a78c736-d3f8-45e0-8e69-bf07c27b97ff', variable: 'MAVEN_SETTINGS')]) {
               wrap([$class: 'Xvnc', useXauthority: true]) {
-                sh "./1-maven-build.sh -s $MAVEN_SETTINGS --tp=${params.TARGET_PLATFORM} "
+                sh "./1-maven-build.sh -s $MAVEN_SETTINGS --tp=${params.TARGET_PLATFORM}"
               }
               step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml'])
             }

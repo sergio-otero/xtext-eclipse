@@ -20,6 +20,7 @@ MVN_ARGS=(\
   -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
 )
 
+# args parsing inspired by https://gist.github.com/jehiah/855086
 while [ "$1" != "" ]; do
   PARAM=`echo $1 | awk -F= '{print $1}'`
   VALUE=`echo $1 | awk -F= '{print $2}'`
