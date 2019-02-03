@@ -15,7 +15,7 @@ pipeline {
             - mountPath: /home/jenkins/.ssh
               name: volume-known-hosts
           - name: plugin-build
-            image: eclipsecbi/debian-gtk3-metacity:9-gtk3.22
+            image: eclipsecbi/fedora-gtk3-mutter:29-gtk3.24
             tty: true
             command: [ "uid_entrypoint", "cat" ]
           volumes:
