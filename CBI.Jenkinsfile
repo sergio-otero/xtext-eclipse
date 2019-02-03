@@ -34,6 +34,11 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr:'15'))
   }
 
+  tools {
+      maven 'apache-maven-latest'
+      jdk 'oracle-jdk8-latest' 
+  }
+  
   // https://jenkins.io/doc/book/pipeline/syntax/#triggers
   triggers {
     pollSCM('H/5 * * * *')
