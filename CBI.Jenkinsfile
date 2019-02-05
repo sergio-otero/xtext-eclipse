@@ -15,7 +15,7 @@ pipeline {
             - mountPath: /home/jenkins/.ssh
               name: volume-known-hosts
           - name: plugin-build
-            image: eclipsecbi/fedora-gtk3-mutter:29-gtk3.24
+            image: mickaelistria/wildwebdeveloper-build-test-dependencies@sha256:c9336c2b3ab06cc803e7465c2c1a3ce
             tty: true
             command: [ "uid_entrypoint", "cat" ]
           volumes:
