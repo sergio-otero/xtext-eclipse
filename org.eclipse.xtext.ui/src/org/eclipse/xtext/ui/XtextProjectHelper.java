@@ -24,7 +24,7 @@ public class XtextProjectHelper {
 
 	public static boolean hasNature(IProject project) {
 		try {
-			if (project.isAccessible()) {
+			if (project != null && project.isAccessible()) {
 				return project.hasNature(NATURE_ID);
 			}
 		} catch (CoreException e) {
@@ -37,7 +37,7 @@ public class XtextProjectHelper {
 	 * @since 2.4
 	 */
 	public static boolean hasBuilder(IProject project) {
-		if (project.isAccessible()) {
+		if (project != null && project.isAccessible()) {
 			try {
 				for (ICommand command : project.getDescription().getBuildSpec()) {
 					if (BUILDER_ID.equals(command.getBuilderName())) {
